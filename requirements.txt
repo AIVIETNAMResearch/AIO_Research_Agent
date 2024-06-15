@@ -22,7 +22,7 @@ schedule==1.2.1
 sendgrid
 markdown
 pyvis==0.3.2
-chainlit==1.1.202
+chainlit==1.1.301
 literalai==0.0.606
 pypdf
 sentence_transformers==2.7.0
