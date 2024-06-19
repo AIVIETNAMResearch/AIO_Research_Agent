@@ -16,9 +16,11 @@ def setup_history(thread: ThreadDict):
     return history
 
 
-def handle_next_question_generation(tools: list, query_str: str, llm_response: str):
+def handle_next_question_generation(
+    tools: list, 
+    query_str: str, 
+    llm_response: str, question_recommender: QuestionRecommender = QuestionRecommender.from_defaults()):
     
-    question_recommender = QuestionRecommender.from_defaults()
     recommended_questions = question_recommender.generate(
         tools=[tool.metadata for tool in tools], 
         query_str=query_str, 

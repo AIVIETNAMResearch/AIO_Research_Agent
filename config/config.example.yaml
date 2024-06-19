@@ -12,3 +12,7 @@ MODEL:
 
   VECTOR_STORE: "chroma" # currently support [qdrant, chroma]
   PAPER_COLLECTION_NAME: "gemma_assistant_arxiv_papers"
+
+  ENABLE_QUESTION_RECOMMENDER: False
+  QR_SERVICE:  # [ ollama, openai, groq, gemini ]
+  QR_MODEL_ID: 

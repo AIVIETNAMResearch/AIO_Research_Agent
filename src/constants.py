@@ -13,6 +13,8 @@ MODEL_ID = cfg.MODEL.MODEL_ID
 EMBEDDING_SERVICE = cfg.MODEL.EMBEDDING_SERVICE
 EMBEDDING_MODEL_NAME = cfg.MODEL.EMBEDDING_MODEL_NAME 
 
+ENABLE_QUESTION_RECOMMENDER = cfg.MODEL.ENABLE_QUESTION_RECOMMENDER
+
 DEFAULT_SYSTEM_PROMPT = """
 Bạn là chatbot được phát triển bởi team GenAIO thuộc AIVIETNAM. 
 Bạn được đưa một nội dung từ một văn bản và công việc của bạn là trả lời một câu hỏi của user về nội dung đã được cung cấp
