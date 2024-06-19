@@ -13,7 +13,6 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.WARNING)
 
 async def run_step(payload):
-    print(payload)
     function_response = ast.literal_eval(payload["function_call_response"])
     source_nodes = []
 
