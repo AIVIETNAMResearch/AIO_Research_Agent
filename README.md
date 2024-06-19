@@ -83,6 +83,24 @@ python src/paper_ingest.py
 
 **Starting the Application**
 
+Before starting your application, you need to fill in some evironment variables. Create a `.env` file and fill in these:
+
+```bash
+# LLM Provider
+OPENAI_API_KEY=
+GROQ_API_KEY= # (Optional)
+GOOGLE_API_KEY=
+
+# For Searching
+SERPER_API_KEY=
+
+# Email Sending
+SENDGRID_API_KEY= # (Optional)
+CHAINLIT_AUTH_SECRET=
+
+```
+You can create th `CHAINLIT_AUTH_SECRET` by running the command `chainlit create-secret`.
+
 Once everything is ready, you can launch the application by running:
 
 ```bash

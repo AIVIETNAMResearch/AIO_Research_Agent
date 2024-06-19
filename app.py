@@ -1,4 +1,3 @@
-import sys
 from fastapi import FastAPI
 from dotenv import load_dotenv
 from api.controller import router
