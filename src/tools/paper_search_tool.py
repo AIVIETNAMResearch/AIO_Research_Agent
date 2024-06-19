@@ -83,7 +83,7 @@ def load_paper_search_tool():
                     operator=FilterOperator.GTE, 
                     value=datetime.strptime(start_date, "%Y-%m-%d").timestamp()))
             
-        if end_date is not None:
+        if end_date is not None and end_date != '':
             filters.filters.append(
                 MetadataFilter(
                     key="date", 
