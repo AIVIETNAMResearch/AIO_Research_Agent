@@ -140,7 +140,10 @@ def load_daily_paper_tool():
         files = os.listdir(directory)
 
         # Extract and convert dates to datetime objects
-        file_dates = [(file, datetime.strptime(file.split('_')[-1].split(".")[0], '%Y-%m-%d')) for file in files]
+        file_dates = [(
+            file, datetime.strptime(file.split('_')[-1].split(".")[0], '%Y-%m-%d')) 
+            for file in files
+            if os.path.isfile(os.path.join(directory, file))]
 
         # Sort files based on date in descending order
         sorted_files = sorted(file_dates, key=lambda x: x[1], reverse=True)
@@ -151,8 +154,7 @@ def load_daily_paper_tool():
 
         with open(os.path.join(directory, latest_file), 'r') as file:
             md_content = file.read()
-            
-            
+                    
         return {"content":  
             f"Report Link: https://github.com/BachNgoH/DailyAIReports/blob/main/daily_reports/{latest_file.split('/')[-1]}\n{md_content}"}
             
