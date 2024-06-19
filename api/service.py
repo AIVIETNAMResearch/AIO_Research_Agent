@@ -10,11 +10,13 @@ from llama_index.core.agent import AgentRunner
 from llama_index.core.callbacks import CallbackManager
 # from src.agents.assistant_agent import AssistantAgent
 from llama_index.agent.openai import OpenAIAgent
-from src.agents.gemini_agent import GeminiForFunctionCalling
+from llama_index.core.agent import ReActAgent
+# from src.agents.gemini_agent import GeminiForFunctionCalling
 from llama_index.core import Settings
 from src.tools.paper_search_tool import load_paper_search_tool, load_daily_paper_tool, load_get_time_tool
 from src.tools.web_search_tool import load_web_search_tool
 from src.tools.summarize_tool import load_summarize_tool
+from src.tasks.question_recommend_task import QuestionRecommender
 from src.constants import SYSTEM_PROMPT
 from starlette.responses import StreamingResponse, Response
 from llama_index.core.base.llms.types import ChatMessage
@@ -27,7 +29,9 @@ from src.constants import (
     SERVICE,
     TEMPERATURE,
     MODEL_ID,
-    STREAM
+    STREAM,
+    ENABLE_QUESTION_RECOMMENDER,
+    cfg
 )
 load_dotenv(override=True)
 
@@ -39,6 +43,11 @@ class AssistantService:
     def __init__(self, callback_manager: Optional[CallbackManager] = None):
         self.callback_manager = callback_manager
         self.query_engine = self.create_query_engine()
+        
+        if ENABLE_QUESTION_RECOMMENDER:
+            qr_llm = self.load_model(cfg.MODEL.QR_SERVICE, cfg.MODEL.QR_MODEL_ID)
+            self.question_recommender = QuestionRecommender.from_defaults(llm=qr_llm)
+
         
     def load_tools(self):
         paper_search_tool = load_paper_search_tool()
@@ -64,11 +73,13 @@ class AssistantService:
         Settings.llm = llm
         self.tools = self.load_tools()
         
-        if SERVICE == "gemini":
-            query_engine = GeminiForFunctionCalling(
+        if SERVICE != "openai":
+            query_engine = ReActAgent.from_tools(
                 tools=self.tools,
-                api_key=os.getenv("GOOGLE_API_KEY"),
-                temperature=TEMPERATURE
+                verbose=True,
+                llm=llm,
+                system_prompt = SYSTEM_PROMPT,
+                callback_manager=self.callback_manager
             )
         else:
             query_engine = OpenAIAgent.from_tools(
@@ -165,13 +176,14 @@ class AssistantService:
             
         await msg.send()
         
-        history.append({"role": "assistant", "content": res.response})
-        
-        next_questions = handle_next_question_generation(tools=self.tools, query_str=message.content, llm_response=res.response)
-        handle_generate_actions(next_questions)
-        
-        actions = [
-            cl.Action(name=question, value=question, description=question) for question in next_questions
-        ]
-        msg.actions = actions
-        await msg.update()
+        if ENABLE_QUESTION_RECOMMENDER:
+            history.append({"role": "assistant", "content": res.response})
+            
+            next_questions = handle_next_question_generation(tools=self.tools, query_str=message.content, llm_response=res.response)
+            handle_generate_actions(next_questions)
+            
+            actions = [
+                cl.Action(name=question, value=question, description=question) for question in next_questions
+            ]
+            msg.actions = actions
+            await msg.update()
